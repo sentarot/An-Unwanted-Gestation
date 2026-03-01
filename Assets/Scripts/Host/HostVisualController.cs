@@ -44,10 +44,18 @@ namespace UWG
         [SerializeField] private SpriteRenderer clothingSprite;
         [SerializeField] private Sprite[] clothingStages; // normal, ill-fitting, ruined
 
-        [Header("Material Properties (3D Mode)")]
+        [Header("Material Properties (3D Mode — URP HostSkin shader)")]
         [SerializeField] private Renderer skinRenderer;
+        [Tooltip("UWG/HostSkin_URP shader property: subsurface translucency")]
         [SerializeField] private string translucencyParam = "_Translucency";
+        [Tooltip("UWG/HostSkin_URP shader property: thermal flush")]
         [SerializeField] private string flushParam = "_FlushIntensity";
+        [Tooltip("UWG/HostSkin_URP shader property: sweat glisten")]
+        [SerializeField] private string sweatParam = "_SweatIntensity";
+        [Tooltip("UWG/HostSkin_URP shader property: vein glow")]
+        [SerializeField] private string veinGlowParam = "_VeinGlowIntensity";
+        [Tooltip("UWG/HostSkin_URP shader property: stretch marks")]
+        [SerializeField] private string stretchParam = "_StretchIntensity";
 
         private GameState _state;
         private MaterialPropertyBlock _mpb;
@@ -158,16 +166,32 @@ namespace UWG
                     clothingSprite.sprite = clothingStages[0]; // normal
             }
 
-            // Skin material properties (3D)
+            // Skin material properties (3D — URP HostSkin_URP shader)
             if (skinRenderer != null)
             {
                 skinRenderer.GetPropertyBlock(_mpb);
 
+                // Translucency — taut, balloon-like skin at high gestation
                 float translucency = flags.Contains(SkillEffectType.VisualSkinTranslucent) ? 0.8f : 0f;
                 _mpb.SetFloat(translucencyParam, translucency);
 
+                // Thermal flush — deep red blush
                 float flush = flags.Contains(SkillEffectType.VisualSweat) ? 0.6f : 0f;
                 _mpb.SetFloat(flushParam, flush);
+
+                // Sweat glisten — boosts specular via URP shader
+                float sweat = flags.Contains(SkillEffectType.VisualSweat) ? 0.8f : 0f;
+                _mpb.SetFloat(sweatParam, sweat);
+
+                // Vein glow — emissive overlay driven by skill
+                float veinGlow = flags.Contains(SkillEffectType.VisualGlowingVeins) ? 1.2f : 0f;
+                _mpb.SetFloat(veinGlowParam, veinGlow);
+
+                // Stretch marks — progressive with gestation
+                float stretch = Mathf.Clamp01(_state.Gestation / _state.GestationCap);
+                if (flags.Contains(SkillEffectType.VisualSkinTranslucent))
+                    stretch *= 1.5f; // more visible on taut skin
+                _mpb.SetFloat(stretchParam, Mathf.Clamp01(stretch));
 
                 skinRenderer.SetPropertyBlock(_mpb);
             }
