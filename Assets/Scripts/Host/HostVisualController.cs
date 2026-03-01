@@ -23,7 +23,6 @@ namespace UWG
 
         [Header("Belly Scaling")]
         [SerializeField] private Vector3 baseBellyScale = Vector3.one;
-        [SerializeField] private float maxBellyScaleMultiplier = 4f;
         [SerializeField] private AnimationCurve bellyCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 4f);
 
         [Header("Posture")]

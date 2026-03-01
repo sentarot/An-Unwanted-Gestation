@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering.RenderGraphModule;
 
 namespace UWG.Rendering
 {
@@ -9,6 +10,9 @@ namespace UWG.Rendering
     /// - Vignette pulse synced to discomfort
     /// - Chromatic aberration during high humiliation
     /// - Screen distortion during abdominal undulation events
+    ///
+    /// Uses the Unity 6 RenderGraph API (RecordRenderGraph) instead of the
+    /// obsolete Execute(ScriptableRenderContext, ref RenderingData).
     ///
     /// SETUP: Add this feature to your Universal Renderer Data asset:
     ///   Universal Renderer Data > Add Renderer Feature > Host Effects
@@ -56,26 +60,35 @@ namespace UWG.Rendering
     public class HostEffectsRenderPass : ScriptableRenderPass
     {
         private readonly HostEffectsRendererFeature.Settings _settings;
-        private static readonly int VignetteIntensityId = Shader.PropertyToID("_VignetteIntensity");
-        private static readonly int VignetteColorId = Shader.PropertyToID("_VignetteColor");
 
         public HostEffectsRenderPass(HostEffectsRendererFeature.Settings settings)
         {
             _settings = settings;
         }
 
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+        /// <summary>
+        /// Unity 6 RenderGraph API entry point. Replaces the obsolete
+        /// Execute(ScriptableRenderContext, ref RenderingData).
+        /// Volume overrides are driven from game state each frame.
+        /// </summary>
+        public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
             var state = GameManager.Instance?.State;
             if (state == null) return;
 
-            // Drive URP Volume overrides from game state
+            // Volume overrides can be driven outside of render graph passes
+            // since they modify shared state, not GPU resources.
+            ApplyVolumeOverrides(state);
+        }
+
+        private void ApplyVolumeOverrides(GameState state)
+        {
             var volumeStack = VolumeManager.instance.stack;
 
             // --- Vignette driven by Discomfort ---
             if (_settings.enableVignettePulse)
             {
-                var vignette = volumeStack.GetComponent<UnityEngine.Rendering.Universal.Vignette>();
+                var vignette = volumeStack.GetComponent<Vignette>();
                 if (vignette != null)
                 {
                     float discomfortNorm = state.Discomfort / 100f;
@@ -90,7 +103,7 @@ namespace UWG.Rendering
             // --- Chromatic Aberration driven by Humiliation ---
             if (_settings.enableChromaticAberration)
             {
-                var chromatic = volumeStack.GetComponent<UnityEngine.Rendering.Universal.ChromaticAberration>();
+                var chromatic = volumeStack.GetComponent<ChromaticAberration>();
                 if (chromatic != null)
                 {
                     float humNorm = state.Humiliation / 100f;
@@ -102,7 +115,7 @@ namespace UWG.Rendering
             if (_settings.enableDistortion &&
                 state.ActiveVisualFlags.Contains(SkillEffectType.VisualAbdominalUndulation))
             {
-                var distortion = volumeStack.GetComponent<UnityEngine.Rendering.Universal.LensDistortion>();
+                var distortion = volumeStack.GetComponent<LensDistortion>();
                 if (distortion != null)
                 {
                     float wave = Mathf.Sin(Time.time * _settings.distortionFrequency);

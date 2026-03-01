@@ -31,10 +31,6 @@ namespace UWG.Rendering
         [Header("Shadow Settings")]
         [SerializeField] private float shadowDistance = 30f;
 
-        [Header("Post-Processing")]
-        [Tooltip("Enable Bloom, Vignette, and Color Grading for the clinical dashboard aesthetic")]
-        [SerializeField] private bool enablePostProcessing = true;
-
         private void Awake()
         {
             ValidateConfiguration();

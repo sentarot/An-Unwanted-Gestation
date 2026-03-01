@@ -122,7 +122,6 @@ namespace UWG
 
         private void ApplyTickDamage()
         {
-            float vulnMult = GameConstants.VULNERABILITY_MULTIPLIER_STANDARD;
             var vuln = State.SelectedHost.vulnerability;
 
             // Discomfort

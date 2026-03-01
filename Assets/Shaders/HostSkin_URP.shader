@@ -3,6 +3,9 @@ Shader "UWG/HostSkin_URP"
     Properties
     {
         // --- Base PBR (URP Lit compatible) ---
+        // NOTE: _BaseMap and _BaseColor are declared by SurfaceInput.hlsl in URP 17+.
+        // We declare them here for the Properties block UI only; the HLSL code
+        // uses the definitions from the include.
         [MainTexture] _BaseMap ("Base Map (Albedo)", 2D) = "white" {}
         [MainColor]   _BaseColor ("Base Color", Color) = (1, 0.85, 0.78, 1)
         _BumpMap ("Normal Map", 2D) = "bump" {}
@@ -64,6 +67,10 @@ Shader "UWG/HostSkin_URP"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+            // SurfaceInput.hlsl in URP 17+ (Unity 6) already declares _BaseMap,
+            // sampler_BaseMap, _BaseColor, _BumpMap, etc. We include it and only
+            // declare our custom textures/properties below.
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 
             struct Attributes
@@ -84,14 +91,12 @@ Shader "UWG/HostSkin_URP"
                 float  fogFactor   : TEXCOORD4;
             };
 
-            // Textures
-            TEXTURE2D(_BaseMap);        SAMPLER(sampler_BaseMap);
-            TEXTURE2D(_BumpMap);        SAMPLER(sampler_BumpMap);
+            // Custom textures only (NOT _BaseMap/_BumpMap — provided by SurfaceInput.hlsl)
             TEXTURE2D(_TranslucencyMap); SAMPLER(sampler_TranslucencyMap);
-            TEXTURE2D(_VeinMap);        SAMPLER(sampler_VeinMap);
-            TEXTURE2D(_StretchMap);     SAMPLER(sampler_StretchMap);
+            TEXTURE2D(_VeinMap);         SAMPLER(sampler_VeinMap);
+            TEXTURE2D(_StretchMap);      SAMPLER(sampler_StretchMap);
 
-            // Properties
+            // Properties — only declare what SurfaceInput.hlsl doesn't cover
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
                 half4  _BaseColor;
@@ -150,8 +155,6 @@ Shader "UWG/HostSkin_URP"
                 // Sample normal map
                 half3 normalTS = UnpackNormalScale(
                     SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, IN.uv), _BumpScale);
-                // Simplified: use world normal directly (full TBN in production)
-                // normalWS = TransformTangentToWorld(normalTS, ...);
 
                 InputData inputData = (InputData)0;
                 inputData.positionWS = IN.positionWS;

@@ -33,8 +33,5 @@ namespace UWG
         public const float BASE_TASK_SUCCESS_CHANCE = 0.85f;
         public const float DISCOMFORT_TASK_PENALTY_MULT = 0.005f;
         public const float HUMILIATION_TASK_PENALTY_MULT = 0.004f;
-
-        // Vulnerability multipliers
-        public const float VULNERABILITY_MULTIPLIER_STANDARD = 1.0f;
     }
 }
