@@ -1,0 +1,131 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/setup_screen.gd" id="1"]
+
+[node name="SetupScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.06, 0.06, 0.08, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 60.0
+text = "AN UNWANTED GESTATION"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 55.0
+offset_right = 150.0
+offset_bottom = 75.0
+text = "Select Host and Payload"
+horizontal_alignment = 1
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.12
+anchor_right = 0.95
+anchor_bottom = 0.85
+
+[node name="HostSelection" type="VBoxContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HostHeader" type="Label" parent="HSplitContainer/HostSelection"]
+layout_mode = 2
+text = "── SELECT HOST ──"
+horizontal_alignment = 1
+
+[node name="HostButtonContainer" type="VBoxContainer" parent="HSplitContainer/HostSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HostSpacer" type="HSeparator" parent="HSplitContainer/HostSelection"]
+layout_mode = 2
+
+[node name="HostNameLabel" type="Label" parent="HSplitContainer/HostSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "No host selected"
+horizontal_alignment = 1
+
+[node name="HostBackdropLabel" type="RichTextLabel" parent="HSplitContainer/HostSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = ""
+fit_content = true
+scroll_active = false
+
+[node name="HostStatsLabel" type="Label" parent="HSplitContainer/HostSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+
+[node name="ClassSelection" type="VBoxContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ClassHeader" type="Label" parent="HSplitContainer/ClassSelection"]
+layout_mode = 2
+text = "── SELECT PAYLOAD ──"
+horizontal_alignment = 1
+
+[node name="ClassButtonContainer" type="VBoxContainer" parent="HSplitContainer/ClassSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ClassSpacer" type="HSeparator" parent="HSplitContainer/ClassSelection"]
+layout_mode = 2
+
+[node name="ClassNameLabel" type="Label" parent="HSplitContainer/ClassSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "No payload selected"
+horizontal_alignment = 1
+
+[node name="ClassConceptLabel" type="RichTextLabel" parent="HSplitContainer/ClassSelection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = ""
+fit_content = true
+scroll_active = false
+
+[node name="StartButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -60.0
+offset_right = 100.0
+offset_bottom = -20.0
+text = "BEGIN SIMULATION"
