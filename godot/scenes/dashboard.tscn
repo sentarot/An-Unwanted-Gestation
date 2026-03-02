@@ -31,10 +31,6 @@ offset_top = 4.0
 offset_right = -4.0
 offset_bottom = -4.0
 
-# ═══════════════════════════════════════════
-# TOP BAR (HUD)
-# ═══════════════════════════════════════════
-
 [node name="TopBar" type="PanelContainer" parent="VBoxLayout"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 64)
@@ -121,15 +117,9 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "1x"
 
-# ═══════════════════════════════════════════
-# MIDDLE AREA (Left Panel + Right Panel)
-# ═══════════════════════════════════════════
-
 [node name="MiddleHBox" type="HBoxContainer" parent="VBoxLayout"]
 layout_mode = 2
 size_flags_vertical = 3
-
-# --- LEFT PANEL: Host Vitals ---
 
 [node name="LeftPanel" type="PanelContainer" parent="VBoxLayout/MiddleHBox"]
 layout_mode = 2
@@ -207,8 +197,6 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "STATUS: ACTIVE"
 
-# --- RIGHT PANEL: Skill Tree ---
-
 [node name="RightPanel" type="PanelContainer" parent="VBoxLayout/MiddleHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -262,10 +250,6 @@ text = "COST: 0 Biomass"
 unique_name_in_owner = true
 layout_mode = 2
 text = "PURCHASE"
-
-# ═══════════════════════════════════════════
-# BOTTOM BAR (Event Log)
-# ═══════════════════════════════════════════
 
 [node name="BottomBar" type="PanelContainer" parent="VBoxLayout"]
 layout_mode = 2

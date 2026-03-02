@@ -25,12 +25,12 @@ func initialize(game_manager: Node) -> void:
 
 
 func _on_game_started() -> void:
-	var state := _game_manager.state
-	host_name_label.text = state.selected_host.host_name
-	archetype_label.text = Enums.HostArchetype.keys()[state.selected_host.archetype]
+	var state: Variant = _game_manager.state
+	host_name_label.text = String(state.selected_host.host_name)
+	archetype_label.text = Enums.HostArchetype.keys()[int(state.selected_host.archetype)]
 	_update_humiliation(0.0)
 	_update_discomfort(0.0)
-	_update_social(state.social_standing)
+	_update_social(float(state.social_standing))
 
 
 func _update_humiliation(value: float) -> void:
