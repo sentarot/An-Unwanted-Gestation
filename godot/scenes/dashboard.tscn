@@ -1,0 +1,295 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud_controller.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/ui/host_vitals_panel.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/skill_tree_panel.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/ui/event_log_panel.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/ui/speed_controls.gd" id="5"]
+
+[node name="Dashboard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.07, 1)
+
+[node name="VBoxLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+
+# ═══════════════════════════════════════════
+# TOP BAR (HUD)
+# ═══════════════════════════════════════════
+
+[node name="TopBar" type="PanelContainer" parent="VBoxLayout"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 64)
+script = ExtResource("1")
+
+[node name="HBox" type="HBoxContainer" parent="VBoxLayout/TopBar"]
+layout_mode = 2
+
+[node name="BiomassLabel" type="Label" parent="VBoxLayout/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "BIOMASS: 0.0"
+
+[node name="GestationVBox" type="VBoxContainer" parent="VBoxLayout/TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="GestationLabel" type="Label" parent="VBoxLayout/TopBar/HBox/GestationVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "GESTATION: 0.0%"
+horizontal_alignment = 1
+
+[node name="GestationBar" type="ProgressBar" parent="VBoxLayout/TopBar/HBox/GestationVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="InterventionVBox" type="VBoxContainer" parent="VBoxLayout/TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="InterventionLabel" type="Label" parent="VBoxLayout/TopBar/HBox/InterventionVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "INTERVENTION: 0.0%"
+horizontal_alignment = 1
+
+[node name="InterventionBar" type="ProgressBar" parent="VBoxLayout/TopBar/HBox/InterventionVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="DayLabel" type="Label" parent="VBoxLayout/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DAY 0"
+
+[node name="SpeedControls" type="HBoxContainer" parent="VBoxLayout/TopBar/HBox"]
+layout_mode = 2
+script = ExtResource("5")
+
+[node name="PauseButton" type="Button" parent="VBoxLayout/TopBar/HBox/SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "||"
+custom_minimum_size = Vector2(36, 0)
+
+[node name="Speed1Button" type="Button" parent="VBoxLayout/TopBar/HBox/SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1x"
+custom_minimum_size = Vector2(36, 0)
+
+[node name="Speed2Button" type="Button" parent="VBoxLayout/TopBar/HBox/SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "2x"
+custom_minimum_size = Vector2(36, 0)
+
+[node name="Speed4Button" type="Button" parent="VBoxLayout/TopBar/HBox/SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "4x"
+custom_minimum_size = Vector2(36, 0)
+
+[node name="SpeedLabel" type="Label" parent="VBoxLayout/TopBar/HBox/SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1x"
+
+# ═══════════════════════════════════════════
+# MIDDLE AREA (Left Panel + Right Panel)
+# ═══════════════════════════════════════════
+
+[node name="MiddleHBox" type="HBoxContainer" parent="VBoxLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+# --- LEFT PANEL: Host Vitals ---
+
+[node name="LeftPanel" type="PanelContainer" parent="VBoxLayout/MiddleHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(280, 0)
+script = ExtResource("2")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxLayout/MiddleHBox/LeftPanel"]
+layout_mode = 2
+
+[node name="VitalsHeader" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+layout_mode = 2
+text = "── HOST VITALS ──"
+horizontal_alignment = 1
+
+[node name="VitalsHostName" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Host Name"
+
+[node name="ArchetypeLabel" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Archetype"
+
+[node name="Sep1" type="HSeparator" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+layout_mode = 2
+
+[node name="CurrentTaskLabel" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Awaiting first task..."
+
+[node name="Sep2" type="HSeparator" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+layout_mode = 2
+
+[node name="HumiliationLabel" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "HUMILIATION: 0"
+
+[node name="HumiliationBar" type="ProgressBar" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="DiscomfortLabel" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "DISCOMFORT: 0"
+
+[node name="DiscomfortBar" type="ProgressBar" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="SocialLabel" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SOCIAL: 0"
+
+[node name="SocialBar" type="ProgressBar" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="Sep3" type="HSeparator" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+layout_mode = 2
+
+[node name="StateLabel" type="Label" parent="VBoxLayout/MiddleHBox/LeftPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "STATUS: ACTIVE"
+
+# --- RIGHT PANEL: Skill Tree ---
+
+[node name="RightPanel" type="PanelContainer" parent="VBoxLayout/MiddleHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+script = ExtResource("3")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxLayout/MiddleHBox/RightPanel"]
+layout_mode = 2
+
+[node name="SkillHeader" type="Label" parent="VBoxLayout/MiddleHBox/RightPanel/VBox"]
+layout_mode = 2
+text = "── EVOLUTION TREE ──"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxLayout/MiddleHBox/RightPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TreeContainer" type="VBoxContainer" parent="VBoxLayout/MiddleHBox/RightPanel/VBox/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TooltipPanel" type="PanelContainer" parent="VBoxLayout/MiddleHBox/RightPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 120)
+
+[node name="TooltipVBox" type="VBoxContainer" parent="VBoxLayout/MiddleHBox/RightPanel/VBox/TooltipPanel"]
+layout_mode = 2
+
+[node name="TooltipName" type="Label" parent="VBoxLayout/MiddleHBox/RightPanel/VBox/TooltipPanel/TooltipVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Skill Name"
+
+[node name="TooltipDesc" type="RichTextLabel" parent="VBoxLayout/MiddleHBox/RightPanel/VBox/TooltipPanel/TooltipVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = "Description"
+fit_content = true
+scroll_active = false
+
+[node name="TooltipCost" type="Label" parent="VBoxLayout/MiddleHBox/RightPanel/VBox/TooltipPanel/TooltipVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "COST: 0 Biomass"
+
+[node name="PurchaseButton" type="Button" parent="VBoxLayout/MiddleHBox/RightPanel/VBox/TooltipPanel/TooltipVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "PURCHASE"
+
+# ═══════════════════════════════════════════
+# BOTTOM BAR (Event Log)
+# ═══════════════════════════════════════════
+
+[node name="BottomBar" type="PanelContainer" parent="VBoxLayout"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 140)
+script = ExtResource("4")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxLayout/BottomBar"]
+layout_mode = 2
+
+[node name="LogHeader" type="Label" parent="VBoxLayout/BottomBar/VBox"]
+layout_mode = 2
+text = "── EVENT LOG ──"
+horizontal_alignment = 1
+
+[node name="LogScrollContainer" type="ScrollContainer" parent="VBoxLayout/BottomBar/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogText" type="RichTextLabel" parent="VBoxLayout/BottomBar/VBox/LogScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = ""
+fit_content = true
+scroll_active = false
