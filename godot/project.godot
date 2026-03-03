@@ -12,11 +12,12 @@ config/features=PackedStringArray("4.3", "GL Compatibility")
 
 GameEvents="*res://scripts/core/game_events.gd"
 GameConstants="*res://scripts/core/game_constants.gd"
+HorrorTheme="*res://scripts/ui/horror_theme.gd"
 
 [display]
 
-window/size/viewport_width=1280
-window/size/viewport_height=720
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
@@ -27,4 +28,4 @@ renderer/rendering_method.mobile="gl_compatibility"
 
 [gui]
 
-theme/default_font_size=14
+theme/default_font_size=16
