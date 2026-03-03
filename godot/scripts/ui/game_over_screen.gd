@@ -18,7 +18,7 @@ func initialize(game_manager: Node) -> void:
 func _show_result(player_won: bool) -> void:
 	panel.show()
 
-	var state := _game_manager.state
+	var state: Variant = _game_manager.state
 
 	outcome_label.text = "GESTATION COMPLETE" if player_won else "INTERVENTION SUCCESSFUL"
 
@@ -32,14 +32,14 @@ func _show_result(player_won: bool) -> void:
 		"Peak Humiliation: %.0f\n" +
 		"Peak Discomfort: %.0f"
 	) % [
-		state.selected_host.host_name,
-		state.selected_class.class_name_text,
-		state.current_day,
-		state.gestation,
-		state.intervention_meter,
-		state.purchased_skills.size(),
-		state.humiliation,
-		state.discomfort
+		String(state.selected_host.host_name),
+		String(state.selected_class.class_name_text),
+		int(state.current_day),
+		float(state.gestation),
+		float(state.intervention_meter),
+		int(state.purchased_skills.size()),
+		float(state.humiliation),
+		float(state.discomfort)
 	]
 
 

@@ -33,7 +33,7 @@ func _rebuild_tree() -> void:
 	for child in tree_container.get_children():
 		child.queue_free()
 
-	var trees := _game_manager.skill_tree_mgr.get_all_trees()
+	var trees: Array = _game_manager.skill_tree_mgr.get_all_trees()
 	for tree in trees:
 		_build_branch(tree)
 
@@ -80,7 +80,7 @@ func _show_tooltip(node: SkillNodeData) -> void:
 	tooltip_name.text = node.node_name
 	tooltip_desc.text = node.description
 	tooltip_cost.text = "COST: %d Biomass" % node.biomass_cost
-	purchase_button.disabled = not _game_manager.skill_tree_mgr.can_purchase(node)
+	purchase_button.disabled = not bool(_game_manager.skill_tree_mgr.can_purchase(node))
 
 
 func _hide_tooltip() -> void:
@@ -97,7 +97,7 @@ func _try_purchase_selected() -> void:
 
 
 func _refresh_all_nodes() -> void:
-	var state := _game_manager.state
+	var state: Variant = _game_manager.state
 	if state == null:
 		return
 
@@ -105,9 +105,9 @@ func _refresh_all_nodes() -> void:
 		var btn: Button = entry["button"]
 		var node: SkillNodeData = entry["node"]
 
-		var purchased := state.has_skill(node)
-		var can_purchase := _game_manager.skill_tree_mgr.can_purchase(node)
-		var prereqs_met := _are_prerequisites_met(node, state)
+		var purchased: bool = bool(state.has_skill(node))
+		var can_purchase: bool = bool(_game_manager.skill_tree_mgr.can_purchase(node))
+		var prereqs_met: bool = _are_prerequisites_met(node, state)
 
 		if purchased:
 			_set_button_style(btn, COLOR_PURCHASED)
@@ -115,7 +115,7 @@ func _refresh_all_nodes() -> void:
 		elif can_purchase:
 			_set_button_style(btn, COLOR_AVAILABLE)
 			btn.disabled = false
-		elif prereqs_met and state.biomass < node.biomass_cost:
+		elif prereqs_met and float(state.biomass) < node.biomass_cost:
 			_set_button_style(btn, COLOR_CANT_AFFORD)
 			btn.disabled = false
 		else:
@@ -123,7 +123,7 @@ func _refresh_all_nodes() -> void:
 			btn.disabled = true
 
 
-func _are_prerequisites_met(node: SkillNodeData, state: GameState) -> bool:
+func _are_prerequisites_met(node: SkillNodeData, state: Variant) -> bool:
 	if node.prerequisites.is_empty():
 		return true
 	for prereq in node.prerequisites:
