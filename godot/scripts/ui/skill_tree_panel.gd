@@ -11,10 +11,10 @@ var _game_manager: Node
 var _selected_node: SkillNodeData
 var _all_node_buttons: Array[Dictionary] = []  # { "button": Button, "node": SkillNodeData }
 
-const COLOR_LOCKED := Color(0.3, 0.3, 0.3)
-const COLOR_AVAILABLE := Color(0.2, 0.7, 0.3)
-const COLOR_PURCHASED := Color(0.8, 0.2, 0.4)
-const COLOR_CANT_AFFORD := Color(0.6, 0.5, 0.1)
+const COLOR_LOCKED := Color(0.12, 0.1, 0.14)
+const COLOR_AVAILABLE := Color(0.12, 0.35, 0.18)
+const COLOR_PURCHASED := Color(0.55, 0.1, 0.17)
+const COLOR_CANT_AFFORD := Color(0.3, 0.22, 0.08)
 
 
 func initialize(game_manager: Node) -> void:
@@ -45,20 +45,20 @@ func _build_branch(tree: SkillTreeData) -> void:
 	var header := Label.new()
 	header.text = "── %s ──" % tree.tree_name
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	header.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
+	header.add_theme_color_override("font_color", Color(0.55, 0.1, 0.17))
 	tree_container.add_child(header)
 
 	var desc_label := Label.new()
 	desc_label.text = tree.description
-	desc_label.add_theme_font_size_override("font_size", 11)
-	desc_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	desc_label.add_theme_font_size_override("font_size", 12)
+	desc_label.add_theme_color_override("font_color", Color(0.38, 0.35, 0.35))
 	tree_container.add_child(desc_label)
 
 	# Nodes
 	for node in tree.nodes:
 		var btn := Button.new()
 		btn.text = "%s [%d]" % [node.node_name, node.biomass_cost]
-		btn.custom_minimum_size = Vector2(0, 32)
+		btn.custom_minimum_size = Vector2(0, 36)
 		btn.pressed.connect(_on_node_clicked.bind(node))
 		tree_container.add_child(btn)
 
@@ -135,8 +135,17 @@ func _are_prerequisites_met(node: SkillNodeData, state: Variant) -> bool:
 func _set_button_style(btn: Button, color: Color) -> void:
 	var style := StyleBoxFlat.new()
 	style.bg_color = color
-	style.corner_radius_top_left = 4
-	style.corner_radius_top_right = 4
-	style.corner_radius_bottom_left = 4
-	style.corner_radius_bottom_right = 4
+	style.border_color = Color(color.r + 0.1, color.g + 0.05, color.b + 0.05, 0.6)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.corner_radius_top_left = 3
+	style.corner_radius_top_right = 3
+	style.corner_radius_bottom_left = 3
+	style.corner_radius_bottom_right = 3
+	style.content_margin_left = 8.0
+	style.content_margin_right = 8.0
+	style.content_margin_top = 4.0
+	style.content_margin_bottom = 4.0
 	btn.add_theme_stylebox_override("normal", style)
