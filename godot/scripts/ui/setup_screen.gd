@@ -38,7 +38,7 @@ func _build_host_buttons() -> void:
 	for host in _game_manager.data_factory.hosts:
 		var btn := Button.new()
 		btn.text = host.host_name
-		btn.custom_minimum_size = Vector2(280, 48)
+		btn.custom_minimum_size = Vector2(320, 54)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(_select_host.bind(host))
 		host_button_container.add_child(btn)
@@ -48,7 +48,7 @@ func _build_class_buttons() -> void:
 	for cls in _game_manager.data_factory.gestation_classes:
 		var btn := Button.new()
 		btn.text = cls.class_name_text
-		btn.custom_minimum_size = Vector2(280, 48)
+		btn.custom_minimum_size = Vector2(320, 54)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(_select_class.bind(cls))
 		class_button_container.add_child(btn)

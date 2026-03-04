@@ -41,7 +41,7 @@ func _update_gestation(value: float) -> void:
 		ratio = value / float(_game_manager.state.gestation_cap)
 	var style: Variant = gestation_bar.get("theme_override_styles/fill")
 	if style is StyleBoxFlat:
-		(style as StyleBoxFlat).bg_color = Color(0.95, 0.15, 0.15) if ratio > 0.75 else Color(0.66, 0.13, 0.25)
+		(style as StyleBoxFlat).bg_color = Color(0.95, 0.15, 0.15) if ratio > 0.75 else Color(0.75, 0.18, 0.30)
 
 
 func _update_intervention(value: float) -> void:

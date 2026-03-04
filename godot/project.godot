@@ -18,6 +18,8 @@ HorrorTheme="*res://scripts/ui/horror_theme.gd"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
@@ -28,4 +30,4 @@ renderer/rendering_method.mobile="gl_compatibility"
 
 [gui]
 
-theme/default_font_size=16
+theme/default_font_size=18

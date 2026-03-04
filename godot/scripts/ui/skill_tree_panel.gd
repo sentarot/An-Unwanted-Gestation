@@ -11,10 +11,10 @@ var _game_manager: Node
 var _selected_node: SkillNodeData
 var _all_node_buttons: Array[Dictionary] = []  # { "button": Button, "node": SkillNodeData }
 
-const COLOR_LOCKED := Color(0.16, 0.14, 0.20)
-const COLOR_AVAILABLE := Color(0.16, 0.42, 0.24)
-const COLOR_PURCHASED := Color(0.66, 0.13, 0.25)
-const COLOR_CANT_AFFORD := Color(0.40, 0.30, 0.12)
+const COLOR_LOCKED := Color(0.24, 0.22, 0.30)
+const COLOR_AVAILABLE := Color(0.20, 0.52, 0.30)
+const COLOR_PURCHASED := Color(0.75, 0.18, 0.30)
+const COLOR_CANT_AFFORD := Color(0.55, 0.42, 0.18)
 
 
 func initialize(game_manager: Node) -> void:
@@ -45,20 +45,21 @@ func _build_branch(tree: SkillTreeData) -> void:
 	var header := Label.new()
 	header.text = "── %s ──" % tree.tree_name
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.add_theme_font_size_override("font_size", 17)
 	header.add_theme_color_override("font_color", Color(0.66, 0.13, 0.25))
 	tree_container.add_child(header)
 
 	var desc_label := Label.new()
 	desc_label.text = tree.description
-	desc_label.add_theme_font_size_override("font_size", 12)
-	desc_label.add_theme_color_override("font_color", Color(0.52, 0.48, 0.48))
+	desc_label.add_theme_font_size_override("font_size", 15)
+	desc_label.add_theme_color_override("font_color", Color(0.75, 0.70, 0.70))
 	tree_container.add_child(desc_label)
 
 	# Nodes
 	for node in tree.nodes:
 		var btn := Button.new()
 		btn.text = "%s [%d]" % [node.node_name, node.biomass_cost]
-		btn.custom_minimum_size = Vector2(0, 36)
+		btn.custom_minimum_size = Vector2(0, 44)
 		btn.pressed.connect(_on_node_clicked.bind(node))
 		tree_container.add_child(btn)
 
@@ -144,8 +145,8 @@ func _set_button_style(btn: Button, color: Color) -> void:
 	style.corner_radius_top_right = 3
 	style.corner_radius_bottom_left = 3
 	style.corner_radius_bottom_right = 3
-	style.content_margin_left = 8.0
-	style.content_margin_right = 8.0
-	style.content_margin_top = 4.0
-	style.content_margin_bottom = 4.0
+	style.content_margin_left = 10.0
+	style.content_margin_right = 10.0
+	style.content_margin_top = 6.0
+	style.content_margin_bottom = 6.0
 	btn.add_theme_stylebox_override("normal", style)
