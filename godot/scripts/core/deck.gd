@@ -23,14 +23,14 @@ func draw(count: int) -> Array[CardData]:
 			_reshuffle_discard()
 		if draw_pile.is_empty():
 			break
-		var card := draw_pile.pop_back()
+		var card: CardData = draw_pile.pop_back()
 		hand.append(card)
 		drawn.append(card)
 	return drawn
 
 
 func play_card(card: CardData) -> bool:
-	var idx := hand.find(card)
+	var idx: int = hand.find(card)
 	if idx < 0:
 		return false
 	hand.remove_at(idx)
