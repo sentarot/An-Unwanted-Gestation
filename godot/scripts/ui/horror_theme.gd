@@ -10,48 +10,48 @@ func _ready() -> void:
 
 func _build_theme() -> Theme:
 	var t := Theme.new()
-	t.default_font_size = 16
+	t.default_font_size = 18
 
 	# ── Color palette (refined dark) ──
 	@warning_ignore("unused_variable")
-	var bg_void := Color("0e0e16")
-	var bg_panel := Color("181820")
-	var border_dark := Color("2e2538")
-	var border_accent := Color("4c2a42")
-	var crimson := Color("a82040")
-	var crimson_bright := Color("d44060")
-	var text_main := Color("ddd6d6")
-	var text_dim := Color("8a8080")
-	var text_dead := Color("504848")
+	var bg_void := Color("1a1a26")
+	var bg_panel := Color("22222e")
+	var border_dark := Color("3e3550")
+	var border_accent := Color("6a3a58")
+	var crimson := Color("c02848")
+	var crimson_bright := Color("e85070")
+	var text_main := Color("e8e2e2")
+	var text_dim := Color("b0a8a8")
+	var text_dead := Color("706868")
 
 	# ── Button ──
-	t.set_stylebox("normal", "Button", _flat(Color("1c1828"), border_dark, 4, 1, 12, 8))
-	t.set_stylebox("hover", "Button", _flat(Color("2a2040"), border_accent, 4, 1, 12, 8))
-	t.set_stylebox("pressed", "Button", _flat(Color("361c38"), crimson, 4, 2, 12, 8))
-	t.set_stylebox("disabled", "Button", _flat(Color("121018"), Color("1c1824"), 4, 1, 12, 8))
-	t.set_stylebox("focus", "Button", _flat(Color("241838"), crimson, 4, 2, 12, 8))
+	t.set_stylebox("normal", "Button", _flat(Color("28243a"), border_dark, 4, 1, 14, 10))
+	t.set_stylebox("hover", "Button", _flat(Color("382e52"), border_accent, 4, 1, 14, 10))
+	t.set_stylebox("pressed", "Button", _flat(Color("462850"), crimson, 4, 2, 14, 10))
+	t.set_stylebox("disabled", "Button", _flat(Color("1e1a28"), Color("2e2838"), 4, 1, 14, 10))
+	t.set_stylebox("focus", "Button", _flat(Color("32244a"), crimson, 4, 2, 14, 10))
 	t.set_color("font_color", "Button", text_main)
 	t.set_color("font_hover_color", "Button", Color.WHITE)
 	t.set_color("font_pressed_color", "Button", crimson_bright)
 	t.set_color("font_disabled_color", "Button", text_dead)
-	t.set_font_size("font_size", "Button", 15)
+	t.set_font_size("font_size", "Button", 17)
 
 	# ── PanelContainer ──
 	t.set_stylebox("panel", "PanelContainer", _flat(bg_panel, border_dark, 4, 1, 10, 10))
 
 	# ── ProgressBar ──
-	var pb_bg := _flat(Color("12121c"), border_dark, 3, 1, 0, 0)
+	var pb_bg := _flat(Color("1e1e2c"), border_dark, 3, 1, 0, 0)
 	var pb_fill := _flat(crimson, Color("00000000"), 3, 0, 0, 0)
 	t.set_stylebox("background", "ProgressBar", pb_bg)
 	t.set_stylebox("fill", "ProgressBar", pb_fill)
 
 	# ── Label ──
 	t.set_color("font_color", "Label", text_main)
-	t.set_font_size("font_size", "Label", 15)
+	t.set_font_size("font_size", "Label", 17)
 
 	# ── RichTextLabel ──
 	t.set_color("default_color", "RichTextLabel", text_dim)
-	t.set_font_size("normal_font_size", "RichTextLabel", 14)
+	t.set_font_size("normal_font_size", "RichTextLabel", 16)
 
 	# ── HSeparator ──
 	var sep := StyleBoxLine.new()
@@ -68,7 +68,7 @@ func _build_theme() -> Theme:
 	t.set_constant("separation", "HSplitContainer", 16)
 
 	# ── Tooltip ──
-	t.set_stylebox("panel", "TooltipPanel", _flat(Color("161420"), crimson, 4, 1, 10, 6))
+	t.set_stylebox("panel", "TooltipPanel", _flat(Color("201c30"), crimson, 4, 1, 10, 6))
 	t.set_color("font_color", "TooltipLabel", text_main)
 
 	return t

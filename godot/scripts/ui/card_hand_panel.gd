@@ -64,7 +64,7 @@ func _show_hand(side: int) -> void:
 
 	for card in deck.hand:
 		var btn := Button.new()
-		btn.custom_minimum_size = Vector2(150, 80)
+		btn.custom_minimum_size = Vector2(170, 100)
 		btn.text = "%s\nCost: %.0f" % [card.card_name, card.play_cost]
 		btn.tooltip_text = card.description
 		btn.toggle_mode = true
