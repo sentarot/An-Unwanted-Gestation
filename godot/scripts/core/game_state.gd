@@ -4,19 +4,22 @@ extends RefCounted
 # --- Setup choices ---
 var selected_host: HostProfile
 var selected_class: GestationClassData
+var player_role: int = Enums.PlayerRole.PREGNANCY
+var is_two_player: bool = false
 
-# --- Time ---
-var current_tick: int = 0
-var current_day: int:
-	get: return current_tick / GameConstants.TICKS_PER_DAY
-var tick_within_day: int:
-	get: return current_tick % GameConstants.TICKS_PER_DAY
+# --- Round tracking ---
+var current_round: int = 0
+var current_phase: int = Enums.RoundPhase.DRAW
 
-# --- Player resources ---
+# --- Pregnancy resources ---
 var biomass: float = 0.0
 var gestation: float = 0.0
 var gestation_cap: float = GameConstants.DEFAULT_GESTATION_CAP
 var gestation_speed_mult: float = 1.0
+
+# --- Host resources ---
+var awareness: float = 0.0
+var peak_awareness: float = 0.0
 
 # --- Host stats (mutable runtime copies) ---
 var physical_resistance: float = 0.0
@@ -35,18 +38,30 @@ var current_host_state: int = Enums.HostState.ACTIVE
 var schedule_index: int = 0
 var is_mind_controlled: bool = false
 
-# --- Purchased skills ---
+# --- Purchased skills (both sides) ---
 var purchased_skills: Array[SkillNodeData] = []
+var purchased_host_skills: Array[SkillNodeData] = []
 
-# --- Aggregate per-tick effects (recalculated each tick) ---
-var tick_discomfort: float = 0.0
-var tick_humiliation: float = 0.0
-var tick_mobility_reduction: float = 0.0
-var tick_intellect_reduction: float = 0.0
-var tick_stamina_reduction: float = 0.0
-var tick_financial_drain: float = 0.0
-var tick_gestation_speed_bonus: float = 0.0
-var tick_biomass_bonus: float = 0.0
+# --- Decks ---
+var pregnancy_deck: Deck = Deck.new()
+var host_deck: Deck = Deck.new()
+
+# --- Cards played this round ---
+var pregnancy_cards_played: Array[CardData] = []
+var host_cards_played: Array[CardData] = []
+
+# --- Per-round aggregate effects (recalculated each resolution) ---
+var round_discomfort: float = 0.0
+var round_humiliation: float = 0.0
+var round_mobility_reduction: float = 0.0
+var round_intellect_reduction: float = 0.0
+var round_stamina_reduction: float = 0.0
+var round_financial_drain: float = 0.0
+var round_gestation_speed_bonus: float = 0.0
+var round_biomass_bonus: float = 0.0
+var round_awareness_bonus: float = 0.0
+var round_intervention_bonus: float = 0.0
+var round_gestation_reduction: float = 0.0
 var task_failure_chance_bonus: float = 0.0
 var cancel_intervention: bool = false
 
@@ -55,7 +70,7 @@ var active_visual_flags: Array[int] = []
 
 # --- Game over ---
 var is_game_over: bool = false
-var player_won: bool = false
+var pregnancy_won: bool = false
 
 
 func initialize_from_selection() -> void:
@@ -78,7 +93,7 @@ func get_current_phase() -> int:
 
 
 func has_skill(node: SkillNodeData) -> bool:
-	return node in purchased_skills
+	return node in purchased_skills or node in purchased_host_skills
 
 
 func has_visual_flag(flag: int) -> bool:

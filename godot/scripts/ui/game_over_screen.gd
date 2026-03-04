@@ -15,31 +15,31 @@ func initialize(game_manager: Node) -> void:
 	panel.hide()
 
 
-func _show_result(player_won: bool) -> void:
+func _show_result(pregnancy_won: bool) -> void:
 	panel.show()
 
 	var state: Variant = _game_manager.state
 
-	outcome_label.text = "GESTATION COMPLETE" if player_won else "INTERVENTION SUCCESSFUL"
+	outcome_label.text = "GESTATION COMPLETE" if pregnancy_won else "INTERVENTION SUCCESSFUL"
 
 	summary_label.text = (
 		"Host: %s\n" +
 		"Payload: %s\n" +
-		"Days Survived: %d\n" +
+		"Rounds: %d\n" +
 		"Final Gestation: %.1f%%\n" +
 		"Final Intervention: %.1f%%\n" +
-		"Skills Purchased: %d\n" +
-		"Peak Humiliation: %.0f\n" +
-		"Peak Discomfort: %.0f"
+		"Pregnancy Skills: %d\n" +
+		"Host Skills: %d\n" +
+		"Peak Awareness: %.0f"
 	) % [
 		String(state.selected_host.host_name),
 		String(state.selected_class.class_name_text),
-		int(state.current_day),
+		int(state.current_round),
 		float(state.gestation),
 		float(state.intervention_meter),
 		int(state.purchased_skills.size()),
-		float(state.humiliation),
-		float(state.discomfort)
+		int(state.purchased_host_skills.size()),
+		float(state.peak_awareness)
 	]
 
 

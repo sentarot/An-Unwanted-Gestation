@@ -15,7 +15,7 @@ func initialize(game_manager: Node) -> void:
 	GameEvents.biomass_changed.connect(_update_biomass)
 	GameEvents.gestation_changed.connect(_update_gestation)
 	GameEvents.intervention_changed.connect(_update_intervention)
-	GameEvents.day_advanced.connect(_update_day)
+	GameEvents.round_started.connect(_update_round)
 	GameEvents.game_started.connect(_on_game_started)
 
 
@@ -26,7 +26,7 @@ func _on_game_started() -> void:
 	_update_biomass(0.0)
 	_update_gestation(0.0)
 	_update_intervention(0.0)
-	_update_day(0)
+	_update_round(0)
 
 
 func _update_biomass(value: float) -> void:
@@ -49,5 +49,5 @@ func _update_intervention(value: float) -> void:
 	intervention_label.text = "INTERVENTION: %.1f%%" % value
 
 
-func _update_day(day: int) -> void:
-	day_label.text = "DAY %d" % day
+func _update_round(round_number: int) -> void:
+	day_label.text = "ROUND %d" % round_number
