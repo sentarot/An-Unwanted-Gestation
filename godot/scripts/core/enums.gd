@@ -31,6 +31,8 @@ enum StatAffinity { PHYSICAL, MENTAL, FINANCIAL, SOCIAL }
 
 # --- Versus mode enums ---
 
+enum PlayerType { HUMAN, AI }
+
 enum PlayerRole { PREGNANCY, HOST }
 
 enum RoundPhase { DRAW, PREGNANCY_TURN, HOST_TURN, RESOLUTION }

@@ -4,8 +4,8 @@ extends RefCounted
 # --- Setup choices ---
 var selected_host: HostProfile
 var selected_class: GestationClassData
-var player_role: int = Enums.PlayerRole.PREGNANCY
-var is_two_player: bool = false
+var pregnancy_player_type: int = Enums.PlayerType.HUMAN
+var host_player_type: int = Enums.PlayerType.AI
 
 # --- Round tracking ---
 var current_round: int = 0

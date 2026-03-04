@@ -41,6 +41,9 @@ func _initialize_ui() -> void:
 	var right_panel := dashboard.get_node("VBoxLayout/MiddleHBox/RightPanel")
 	right_panel.initialize(self)
 
+	var card_hand := dashboard.get_node("VBoxLayout/CardHandPanel")
+	card_hand.initialize(self)
+
 	var bottom_bar := dashboard.get_node("VBoxLayout/BottomBar")
 	bottom_bar.initialize(self)
 
@@ -49,13 +52,13 @@ func _initialize_ui() -> void:
 
 
 func begin_game(host: HostProfile, gestation_class: GestationClassData,
-		player_role: int = Enums.PlayerRole.PREGNANCY,
-		is_two_player: bool = false) -> void:
+		pregnancy_player_type: int = Enums.PlayerType.HUMAN,
+		host_player_type: int = Enums.PlayerType.AI) -> void:
 	state = GameState.new()
 	state.selected_host = host
 	state.selected_class = gestation_class
-	state.player_role = player_role
-	state.is_two_player = is_two_player
+	state.pregnancy_player_type = pregnancy_player_type
+	state.host_player_type = host_player_type
 	state.initialize_from_selection()
 
 	state.biomass = GameConstants.STARTING_BIOMASS
@@ -116,7 +119,7 @@ func _start_pregnancy_turn() -> void:
 	state.current_phase = Enums.RoundPhase.PREGNANCY_TURN
 	GameEvents.phase_changed.emit(state.current_phase)
 
-	if not state.is_two_player and state.player_role == Enums.PlayerRole.HOST:
+	if state.pregnancy_player_type == Enums.PlayerType.AI:
 		var ai_cards := pregnancy_ai.choose_cards(state)
 		pregnancy_submit_cards(ai_cards)
 
@@ -125,7 +128,7 @@ func _start_host_turn() -> void:
 	state.current_phase = Enums.RoundPhase.HOST_TURN
 	GameEvents.phase_changed.emit(state.current_phase)
 
-	if not state.is_two_player and state.player_role == Enums.PlayerRole.PREGNANCY:
+	if state.host_player_type == Enums.PlayerType.AI:
 		var ai_cards := host_ai.choose_cards(state)
 		host_submit_cards(ai_cards)
 
