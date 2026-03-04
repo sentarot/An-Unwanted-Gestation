@@ -13,6 +13,7 @@ func _build_theme() -> Theme:
 	t.default_font_size = 16
 
 	# ── Color palette ──
+	@warning_ignore("unused_variable")
 	var bg_void := Color("06060c")
 	var bg_panel := Color("0c0c18")
 	var border_dark := Color("1a0c14")
