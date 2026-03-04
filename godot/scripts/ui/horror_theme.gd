@@ -12,24 +12,24 @@ func _build_theme() -> Theme:
 	var t := Theme.new()
 	t.default_font_size = 16
 
-	# ── Color palette ──
+	# ── Color palette (refined dark) ──
 	@warning_ignore("unused_variable")
-	var bg_void := Color("06060c")
-	var bg_panel := Color("0c0c18")
-	var border_dark := Color("1a0c14")
-	var border_accent := Color("381428")
-	var crimson := Color("8b1a2b")
-	var crimson_bright := Color("c4324a")
-	var text_main := Color("c8bfbf")
-	var text_dim := Color("605858")
-	var text_dead := Color("302828")
+	var bg_void := Color("0e0e16")
+	var bg_panel := Color("181820")
+	var border_dark := Color("2e2538")
+	var border_accent := Color("4c2a42")
+	var crimson := Color("a82040")
+	var crimson_bright := Color("d44060")
+	var text_main := Color("ddd6d6")
+	var text_dim := Color("8a8080")
+	var text_dead := Color("504848")
 
 	# ── Button ──
-	t.set_stylebox("normal", "Button", _flat(Color("14101e"), border_dark, 3, 1, 12, 8))
-	t.set_stylebox("hover", "Button", _flat(Color("1e1430"), border_accent, 3, 1, 12, 8))
-	t.set_stylebox("pressed", "Button", _flat(Color("2a1028"), crimson, 3, 2, 12, 8))
-	t.set_stylebox("disabled", "Button", _flat(Color("0a0a10"), Color("100c14"), 3, 1, 12, 8))
-	t.set_stylebox("focus", "Button", _flat(Color("18102a"), crimson, 3, 2, 12, 8))
+	t.set_stylebox("normal", "Button", _flat(Color("1c1828"), border_dark, 4, 1, 12, 8))
+	t.set_stylebox("hover", "Button", _flat(Color("2a2040"), border_accent, 4, 1, 12, 8))
+	t.set_stylebox("pressed", "Button", _flat(Color("361c38"), crimson, 4, 2, 12, 8))
+	t.set_stylebox("disabled", "Button", _flat(Color("121018"), Color("1c1824"), 4, 1, 12, 8))
+	t.set_stylebox("focus", "Button", _flat(Color("241838"), crimson, 4, 2, 12, 8))
 	t.set_color("font_color", "Button", text_main)
 	t.set_color("font_hover_color", "Button", Color.WHITE)
 	t.set_color("font_pressed_color", "Button", crimson_bright)
@@ -37,11 +37,11 @@ func _build_theme() -> Theme:
 	t.set_font_size("font_size", "Button", 15)
 
 	# ── PanelContainer ──
-	t.set_stylebox("panel", "PanelContainer", _flat(bg_panel, border_dark, 2, 1, 8, 8))
+	t.set_stylebox("panel", "PanelContainer", _flat(bg_panel, border_dark, 4, 1, 10, 10))
 
 	# ── ProgressBar ──
-	var pb_bg := _flat(Color("0a0a12"), border_dark, 2, 1, 0, 0)
-	var pb_fill := _flat(crimson, Color("00000000"), 2, 0, 0, 0)
+	var pb_bg := _flat(Color("12121c"), border_dark, 3, 1, 0, 0)
+	var pb_fill := _flat(crimson, Color("00000000"), 3, 0, 0, 0)
 	t.set_stylebox("background", "ProgressBar", pb_bg)
 	t.set_stylebox("fill", "ProgressBar", pb_fill)
 
@@ -68,7 +68,7 @@ func _build_theme() -> Theme:
 	t.set_constant("separation", "HSplitContainer", 16)
 
 	# ── Tooltip ──
-	t.set_stylebox("panel", "TooltipPanel", _flat(Color("0c0a14"), crimson, 3, 1, 10, 6))
+	t.set_stylebox("panel", "TooltipPanel", _flat(Color("161420"), crimson, 4, 1, 10, 6))
 	t.set_color("font_color", "TooltipLabel", text_main)
 
 	return t

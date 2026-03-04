@@ -53,9 +53,9 @@ func _on_task_resolved(task: int, succeeded: bool) -> void:
 	var task_name: String = Enums.TaskType.keys()[task].replace("_", " ").capitalize()
 	current_task_label.text = "%s — %s" % [task_name, status]
 	if succeeded:
-		current_task_label.modulate = Color(0.2, 0.9, 0.3)
+		current_task_label.modulate = Color(0.3, 0.95, 0.4)
 	else:
-		current_task_label.modulate = Color(0.9, 0.2, 0.2)
+		current_task_label.modulate = Color(0.95, 0.3, 0.3)
 
 
 func _on_state_changed(_old_state: int, new_state: int) -> void:
