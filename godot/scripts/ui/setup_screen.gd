@@ -9,11 +9,17 @@ extends Control
 @onready var class_name_label: Label = %ClassNameLabel
 @onready var class_concept_label: RichTextLabel = %ClassConceptLabel
 
+@onready var pregnancy_type_button: Button = %PregnancyTypeButton
+@onready var host_type_button: Button = %HostTypeButton
+
 @onready var start_button: Button = %StartButton
 
 var _selected_host: HostProfile
 var _selected_class: GestationClassData
 var _game_manager: Node
+
+var _pregnancy_player_type: int = Enums.PlayerType.HUMAN
+var _host_player_type: int = Enums.PlayerType.AI
 
 
 func initialize(game_manager: Node) -> void:
@@ -22,6 +28,10 @@ func initialize(game_manager: Node) -> void:
 	_build_class_buttons()
 	start_button.pressed.connect(_on_start_clicked)
 	start_button.disabled = true
+
+	pregnancy_type_button.pressed.connect(_toggle_pregnancy_type)
+	host_type_button.pressed.connect(_toggle_host_type)
+	_update_type_buttons()
 
 
 func _build_host_buttons() -> void:
@@ -67,9 +77,34 @@ func _update_start_button() -> void:
 	start_button.disabled = _selected_host == null or _selected_class == null
 
 
+func _toggle_pregnancy_type() -> void:
+	if _pregnancy_player_type == Enums.PlayerType.HUMAN:
+		_pregnancy_player_type = Enums.PlayerType.AI
+	else:
+		_pregnancy_player_type = Enums.PlayerType.HUMAN
+	_update_type_buttons()
+
+
+func _toggle_host_type() -> void:
+	if _host_player_type == Enums.PlayerType.HUMAN:
+		_host_player_type = Enums.PlayerType.AI
+	else:
+		_host_player_type = Enums.PlayerType.HUMAN
+	_update_type_buttons()
+
+
+func _update_type_buttons() -> void:
+	var preg_label := "HUMAN" if _pregnancy_player_type == Enums.PlayerType.HUMAN else "AI"
+	pregnancy_type_button.text = "GESTATION: %s" % preg_label
+
+	var host_label := "HUMAN" if _host_player_type == Enums.PlayerType.HUMAN else "AI"
+	host_type_button.text = "HOST: %s" % host_label
+
+
 func _on_start_clicked() -> void:
 	if _selected_host == null or _selected_class == null:
 		return
 	hide()
 	get_parent().get_node("Dashboard").show()
-	_game_manager.begin_game(_selected_host, _selected_class)
+	_game_manager.begin_game(_selected_host, _selected_class,
+		_pregnancy_player_type, _host_player_type)

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud_controller.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui/host_vitals_panel.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/skill_tree_panel.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/ui/event_log_panel.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/ui/speed_controls.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/ui/card_hand_panel.gd" id="6"]
 
 [node name="Dashboard" type="Control"]
 layout_mode = 3
@@ -287,6 +288,51 @@ unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(0, 40)
 text = "PURCHASE"
+
+[node name="CardHandPanel" type="PanelContainer" parent="VBoxLayout"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 120)
+visible = false
+script = ExtResource("6")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxLayout/CardHandPanel"]
+layout_mode = 2
+
+[node name="PhaseLabel" type="Label" parent="VBoxLayout/CardHandPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.66, 0.13, 0.25, 1)
+text = "YOUR TURN"
+horizontal_alignment = 1
+
+[node name="HandScroll" type="ScrollContainer" parent="VBoxLayout/CardHandPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="HandContainer" type="HBoxContainer" parent="VBoxLayout/CardHandPanel/VBox/HandScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SubmitHBox" type="HBoxContainer" parent="VBoxLayout/CardHandPanel/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="BudgetLabel" type="Label" parent="VBoxLayout/CardHandPanel/VBox/SubmitHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.22, 0.58, 0.35, 1)
+text = "BUDGET: 0"
+
+[node name="SubmitButton" type="Button" parent="VBoxLayout/CardHandPanel/VBox/SubmitHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(260, 36)
+text = "SUBMIT TURN"
 
 [node name="BottomBar" type="PanelContainer" parent="VBoxLayout"]
 layout_mode = 2
