@@ -2,20 +2,13 @@ extends Node
 
 var state: GameState
 var data_factory: DataFactory
-var host_ai: HostAIController
-var player_ctrl: PlayerController
 var skill_tree_mgr: SkillTreeManager
-var effect_processor: SkillEffectProcessor
+var card_resolver: CardResolver
 var event_log_gen: EventLogGenerator
 
-var _tick_timer: float = 0.0
-var _paused: bool = true
-var _speed_multiplier: float = 1.0
-
-var is_paused: bool:
-	get: return _paused
-var speed_multiplier: float:
-	get: return _speed_multiplier
+# AI controllers (used when a side is AI-controlled)
+var pregnancy_ai: PregnancyAI
+var host_ai: HostAI
 
 
 func _ready() -> void:
@@ -23,13 +16,12 @@ func _ready() -> void:
 	add_child(data_factory)
 	data_factory.generate()
 
-	host_ai = HostAIController.new()
-	player_ctrl = PlayerController.new()
 	skill_tree_mgr = SkillTreeManager.new()
-	effect_processor = SkillEffectProcessor.new()
+	card_resolver = CardResolver.new()
 	event_log_gen = EventLogGenerator.new()
+	pregnancy_ai = PregnancyAI.new()
+	host_ai = HostAI.new()
 
-	# Wire up UI components
 	_initialize_ui()
 
 
@@ -38,15 +30,10 @@ func _initialize_ui() -> void:
 	var setup_screen := ui_root.get_node("SetupScreen")
 	var dashboard := ui_root.get_node("Dashboard")
 
-	# Setup screen
 	setup_screen.initialize(self)
 
-	# Dashboard panels (find by script type via node paths)
 	var top_bar := dashboard.get_node("VBoxLayout/TopBar")
 	top_bar.initialize(self)
-
-	var speed_controls := dashboard.get_node("VBoxLayout/TopBar/HBox/SpeedControls")
-	speed_controls.initialize(self)
 
 	var left_panel := dashboard.get_node("VBoxLayout/MiddleHBox/LeftPanel")
 	left_panel.initialize(self)
@@ -57,151 +44,164 @@ func _initialize_ui() -> void:
 	var bottom_bar := dashboard.get_node("VBoxLayout/BottomBar")
 	bottom_bar.initialize(self)
 
-	# Game over screen
 	var game_over := get_node("GameOverScreen")
 	game_over.initialize(self)
 
 
-func begin_game(host: HostProfile, gestation_class: GestationClassData) -> void:
+func begin_game(host: HostProfile, gestation_class: GestationClassData,
+		player_role: int = Enums.PlayerRole.PREGNANCY,
+		is_two_player: bool = false) -> void:
 	state = GameState.new()
 	state.selected_host = host
 	state.selected_class = gestation_class
+	state.player_role = player_role
+	state.is_two_player = is_two_player
 	state.initialize_from_selection()
 
-	host_ai.initialize(state)
-	player_ctrl.initialize(state)
+	state.biomass = GameConstants.STARTING_BIOMASS
+	state.awareness = GameConstants.STARTING_AWARENESS
+
 	skill_tree_mgr.initialize(state, data_factory)
+	pregnancy_ai.initialize(state, skill_tree_mgr)
+	host_ai.initialize(state, skill_tree_mgr)
 	event_log_gen.initialize(self)
+
+	_build_starting_decks()
 
 	GameEvents.game_started.emit()
 	GameEvents.event_log_entry.emit(
-		"Simulation initialized. Host: %s. Payload: %s. Vulnerability: %s." % [
+		"Versus mode initialized. Host: %s. Payload: %s. Vulnerability: %s." % [
 			state.selected_host.host_name,
 			state.selected_class.class_name_text,
 			Enums.VulnerabilityType.keys()[state.selected_host.vulnerability]
 		]
 	)
 
-	start_ticking()
+	begin_round()
 
 
-func _process(delta: float) -> void:
-	if _paused or state == null or state.is_game_over:
-		return
+func _build_starting_decks() -> void:
+	for card in data_factory.pregnancy_starter_cards:
+		state.pregnancy_deck.add_card(card)
+	state.pregnancy_deck.shuffle()
 
-	_tick_timer += delta * _speed_multiplier
-	if _tick_timer >= GameConstants.SECONDS_PER_TICK:
-		_tick_timer -= GameConstants.SECONDS_PER_TICK
-		_process_tick()
-
-
-func start_ticking() -> void:
-	_paused = false
-
-func pause() -> void:
-	_paused = true
-
-func resume() -> void:
-	_paused = false
-
-func set_speed(mult: float) -> void:
-	_speed_multiplier = maxf(0.25, mult)
+	for card in data_factory.host_starter_cards:
+		state.host_deck.add_card(card)
+	state.host_deck.shuffle()
 
 
-func _process_tick() -> void:
+# =====================================================================
+# ROUND FLOW
+# =====================================================================
+
+func begin_round() -> void:
 	if state == null or state.is_game_over:
 		return
 
-	state.current_tick += 1
+	state.current_round += 1
+	state.current_phase = Enums.RoundPhase.DRAW
 
-	# 1. Recalculate aggregate effects from all purchased skills
-	effect_processor.recalculate_effects(state)
+	GameEvents.round_started.emit(state.current_round)
+	GameEvents.event_log_entry.emit("--- Round %d ---" % state.current_round)
 
-	# 2. Generate biomass
-	player_ctrl.generate_biomass(state)
+	var preg_drawn := state.pregnancy_deck.draw(GameConstants.CARDS_TO_DRAW)
+	var host_drawn := state.host_deck.draw(GameConstants.CARDS_TO_DRAW)
+	GameEvents.cards_drawn.emit(Enums.CardSide.PREGNANCY, preg_drawn.size())
+	GameEvents.cards_drawn.emit(Enums.CardSide.HOST, host_drawn.size())
 
-	# 3. Advance gestation
-	_advance_gestation()
+	_start_pregnancy_turn()
 
-	# 4. Apply per-tick stat damage from skills
-	_apply_tick_damage()
 
-	# 5. Run Host AI (state evaluation + task execution)
-	host_ai.process_tick(state)
+func _start_pregnancy_turn() -> void:
+	state.current_phase = Enums.RoundPhase.PREGNANCY_TURN
+	GameEvents.phase_changed.emit(state.current_phase)
 
-	# 6. Apply natural stat recovery
-	_apply_natural_recovery()
+	if not state.is_two_player and state.player_role == Enums.PlayerRole.HOST:
+		var ai_cards := pregnancy_ai.choose_cards(state)
+		pregnancy_submit_cards(ai_cards)
 
-	# 7. Check win/lose
+
+func _start_host_turn() -> void:
+	state.current_phase = Enums.RoundPhase.HOST_TURN
+	GameEvents.phase_changed.emit(state.current_phase)
+
+	if not state.is_two_player and state.player_role == Enums.PlayerRole.PREGNANCY:
+		var ai_cards := host_ai.choose_cards(state)
+		host_submit_cards(ai_cards)
+
+
+func pregnancy_submit_cards(cards: Array[CardData]) -> void:
+	if state.current_phase != Enums.RoundPhase.PREGNANCY_TURN:
+		return
+
+	var total_cost := 0.0
+	var valid_cards: Array[CardData] = []
+	for card in cards:
+		if valid_cards.size() >= GameConstants.MAX_CARDS_PER_TURN:
+			break
+		if state.biomass >= total_cost + card.play_cost:
+			valid_cards.append(card)
+			total_cost += card.play_cost
+
+	state.biomass -= total_cost
+	GameEvents.biomass_changed.emit(state.biomass)
+
+	for card in valid_cards:
+		state.pregnancy_deck.play_card(card)
+	state.pregnancy_cards_played = valid_cards
+
+	GameEvents.cards_played.emit(Enums.CardSide.PREGNANCY, valid_cards)
+	GameEvents.turn_submitted.emit(Enums.PlayerRole.PREGNANCY)
+
+	_start_host_turn()
+
+
+func host_submit_cards(cards: Array[CardData]) -> void:
+	if state.current_phase != Enums.RoundPhase.HOST_TURN:
+		return
+
+	var total_cost := 0.0
+	var valid_cards: Array[CardData] = []
+	for card in cards:
+		if valid_cards.size() >= GameConstants.MAX_CARDS_PER_TURN:
+			break
+		if state.awareness >= total_cost + card.play_cost:
+			valid_cards.append(card)
+			total_cost += card.play_cost
+
+	state.awareness -= total_cost
+	GameEvents.awareness_changed.emit(state.awareness)
+
+	for card in valid_cards:
+		state.host_deck.play_card(card)
+	state.host_cards_played = valid_cards
+
+	GameEvents.cards_played.emit(Enums.CardSide.HOST, valid_cards)
+	GameEvents.turn_submitted.emit(Enums.PlayerRole.HOST)
+
+	_resolve_round()
+
+
+func _resolve_round() -> void:
+	state.current_phase = Enums.RoundPhase.RESOLUTION
+	GameEvents.phase_changed.emit(state.current_phase)
+
+	card_resolver.resolve_round(state)
 	_check_end_conditions()
 
-	# 8. Fire day boundary
-	if state.tick_within_day == 0 and state.current_tick > 0:
-		GameEvents.day_advanced.emit(state.current_day)
-		GameEvents.event_log_entry.emit("--- Day %d ---" % state.current_day)
-
-	GameEvents.tick_end.emit()
-
-
-func _advance_gestation() -> void:
-	var rate := GameConstants.BASE_GESTATION_PER_TICK \
-		* state.gestation_speed_mult \
-		* (1.0 + state.tick_gestation_speed_bonus)
-
-	state.gestation = minf(state.gestation + rate, state.gestation_cap)
-	GameEvents.gestation_changed.emit(state.gestation)
-
-
-func _apply_tick_damage() -> void:
-	var vuln := state.selected_host.vulnerability
-
-	# Discomfort
-	var discomfort_delta := state.tick_discomfort
-	if vuln == Enums.VulnerabilityType.DISCOMFORT:
-		discomfort_delta *= state.selected_host.vulnerability_multiplier
-	if discomfort_delta > 0.0:
-		state.discomfort = clampf(state.discomfort + discomfort_delta, 0.0, 100.0)
-		GameEvents.discomfort_changed.emit(state.discomfort)
-
-	# Humiliation
-	var humiliation_delta := state.tick_humiliation
-	if vuln == Enums.VulnerabilityType.HUMILIATION:
-		humiliation_delta *= state.selected_host.vulnerability_multiplier
-	if humiliation_delta > 0.0:
-		state.humiliation = clampf(state.humiliation + humiliation_delta, 0.0, 100.0)
-		GameEvents.humiliation_changed.emit(state.humiliation)
-
-	# Financial drain
-	if state.tick_financial_drain > 0.0:
-		state.financial_resources = maxf(0.0, state.financial_resources - state.tick_financial_drain)
-
-	# Mobility
-	state.mobility = clampf(1.0 - state.tick_mobility_reduction, 0.0, 1.0)
-
-
-func _apply_natural_recovery() -> void:
-	var phys_recovery := state.physical_resistance * 0.005
-	var ment_recovery := state.mental_defense * 0.004
-
-	state.discomfort = maxf(0.0,
-		state.discomfort - GameConstants.DISCOMFORT_NATURAL_DECAY * (1.0 + phys_recovery))
-	state.humiliation = maxf(0.0,
-		state.humiliation - GameConstants.HUMILIATION_NATURAL_DECAY * (1.0 + ment_recovery))
-
-	GameEvents.discomfort_changed.emit(state.discomfort)
-	GameEvents.humiliation_changed.emit(state.humiliation)
+	if not state.is_game_over:
+		GameEvents.round_ended.emit(state.current_round)
+		begin_round()
 
 
 func _check_end_conditions() -> void:
 	if state.gestation >= state.gestation_cap:
 		state.is_game_over = true
-		state.player_won = true
-		pause()
+		state.pregnancy_won = true
 		GameEvents.game_ended.emit(true)
-		GameEvents.event_log_entry.emit("=== GESTATION COMPLETE. THE PAYLOAD HAS WON. ===")
+		GameEvents.event_log_entry.emit("=== GESTATION COMPLETE. THE PREGNANCY HAS WON. ===")
 	elif state.intervention_meter >= GameConstants.INTERVENTION_LOSE_THRESHOLD:
 		state.is_game_over = true
-		state.player_won = false
-		pause()
+		state.pregnancy_won = false
 		GameEvents.game_ended.emit(false)
 		GameEvents.event_log_entry.emit("=== INTERVENTION SUCCESSFUL. THE HOST HAS BEEN CURED. ===")

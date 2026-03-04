@@ -7,13 +7,29 @@ var general_somatic: SkillTreeData
 var general_endocrine: SkillTreeData
 var general_temporal: SkillTreeData
 
+# Host-side skill trees
+var host_self_care: SkillTreeData
+var host_investigation: SkillTreeData
+var host_medical: SkillTreeData
+var host_social: SkillTreeData
+
+# Starter card decks
+var pregnancy_starter_cards: Array[CardData] = []
+var host_starter_cards: Array[CardData] = []
+
 
 func generate() -> void:
 	general_somatic = _create_general_somatic_tree()
 	general_endocrine = _create_general_endocrine_tree()
 	general_temporal = _create_general_temporal_tree()
+	host_self_care = _create_host_self_care_tree()
+	host_investigation = _create_host_investigation_tree()
+	host_medical = _create_host_medical_tree()
+	host_social = _create_host_social_tree()
 	hosts = _create_all_hosts()
 	gestation_classes = _create_all_classes()
+	pregnancy_starter_cards = _create_pregnancy_starter_cards()
+	host_starter_cards = _create_host_starter_cards()
 
 
 # =====================================================================
@@ -515,3 +531,164 @@ func _create_symbiotic_branch_c() -> SkillTreeData:
 	t4.prerequisites = [t3]
 	tree.nodes = [t1, t2, t3, t4]
 	return tree
+
+
+func _make_card(p_name: String, p_side: int, p_cost: float, p_desc: String,
+		p_effects: Array[Dictionary], p_narrative: String = "") -> CardData:
+	return CardData.create(p_name, p_side, p_cost, p_desc, p_effects, p_narrative)
+
+
+# =====================================================================
+# HOST SKILL TREES (playable by Host side in versus mode)
+# =====================================================================
+
+func _create_host_self_care_tree() -> SkillTreeData:
+	var tree := SkillTreeData.new()
+	tree.tree_name = "Self-Care & Resilience"
+	tree.branch = Enums.SkillBranch.HOST_SELF_CARE
+	tree.description = "Physical recovery and mental fortitude."
+
+	var E := Enums.SkillEffectType
+	var t1 := _make_node("Deep Breathing", 1, 8, "Controlled breathing reduces discomfort buildup.",
+		[_e(E.ADD_DISCOMFORT, -1.0)] as Array[Dictionary])
+	var t2 := _make_node("Mindfulness Training", 2, 18, "Mental clarity fights pregnancy brain.",
+		[_e(E.RAISE_AWARENESS, 2.0)] as Array[Dictionary])
+	var t3 := _make_node("Iron Will", 3, 35, "Sheer determination shields against humiliation.",
+		[_e(E.ADD_HUMILIATION, -2.0), _e(E.RAISE_AWARENESS, 1.0)] as Array[Dictionary])
+	var t4 := _make_node("Unbreakable Resolve", 4, 60, "Nothing can make her give in.",
+		[_e(E.SHIELD_AWARENESS, 5.0), _e(E.ADD_DISCOMFORT, -3.0)] as Array[Dictionary])
+
+	t2.prerequisites = [t1]
+	t3.prerequisites = [t2]
+	t4.prerequisites = [t3]
+	tree.nodes = [t1, t2, t3, t4]
+	return tree
+
+
+func _create_host_investigation_tree() -> SkillTreeData:
+	var tree := SkillTreeData.new()
+	tree.tree_name = "Investigation & Research"
+	tree.branch = Enums.SkillBranch.HOST_INVESTIGATION
+	tree.description = "Discovering the truth about the condition."
+
+	var E := Enums.SkillEffectType
+	var t1 := _make_node("Something Feels Wrong", 1, 6, "Initial suspicion. Begins building awareness.",
+		[_e(E.RAISE_AWARENESS, 3.0)] as Array[Dictionary])
+	var t2 := _make_node("Internet Research", 2, 15, "Cross-referencing symptoms online.",
+		[_e(E.RAISE_AWARENESS, 4.0)] as Array[Dictionary])
+	var t3 := _make_node("Hidden Camera", 3, 30, "Catches evidence of unnatural belly movement.",
+		[_e(E.RAISE_AWARENESS, 6.0), _e(E.BOOST_INTERVENTION, 3.0)] as Array[Dictionary])
+	var t4 := _make_node("Full Comprehension", 4, 55, "She knows exactly what is happening.",
+		[_e(E.RAISE_AWARENESS, 8.0), _e(E.BOOST_INTERVENTION, 5.0)] as Array[Dictionary])
+
+	t2.prerequisites = [t1]
+	t3.prerequisites = [t2]
+	t4.prerequisites = [t3]
+	tree.nodes = [t1, t2, t3, t4]
+	return tree
+
+
+func _create_host_medical_tree() -> SkillTreeData:
+	var tree := SkillTreeData.new()
+	tree.tree_name = "Medical Intervention"
+	tree.branch = Enums.SkillBranch.HOST_MEDICAL
+	tree.description = "Seeking professional help to end the condition."
+
+	var E := Enums.SkillEffectType
+	var t1 := _make_node("GP Appointment", 1, 10, "A general practitioner notices anomalies.",
+		[_e(E.BOOST_INTERVENTION, 5.0)] as Array[Dictionary])
+	var t2 := _make_node("Specialist Referral", 2, 22, "An OBGYN with unusual expertise.",
+		[_e(E.BOOST_INTERVENTION, 8.0), _e(E.REDUCE_GESTATION, 1.0)] as Array[Dictionary])
+	var t3 := _make_node("Experimental Treatment", 3, 40, "Cutting-edge procedure to slow the growth.",
+		[_e(E.REDUCE_GESTATION, 3.0), _e(E.REDUCE_BIOMASS, 5.0, false)] as Array[Dictionary])
+	var t4 := _make_node("Emergency Extraction", 4, 70, "A drastic procedure. Massive intervention push.",
+		[_e(E.BOOST_INTERVENTION, 20.0, false), _e(E.REDUCE_GESTATION, 5.0)] as Array[Dictionary])
+
+	t2.prerequisites = [t1]
+	t3.prerequisites = [t2]
+	t4.prerequisites = [t3]
+	tree.nodes = [t1, t2, t3, t4]
+	return tree
+
+
+func _create_host_social_tree() -> SkillTreeData:
+	var tree := SkillTreeData.new()
+	tree.tree_name = "Social Network"
+	tree.branch = Enums.SkillBranch.HOST_SOCIAL
+	tree.description = "Leveraging relationships and social connections."
+
+	var E := Enums.SkillEffectType
+	var t1 := _make_node("Confide in Friend", 1, 8, "Sharing concerns builds support.",
+		[_e(E.RAISE_AWARENESS, 2.0), _e(E.ADD_HUMILIATION, -1.0)] as Array[Dictionary])
+	var t2 := _make_node("Support Group", 2, 18, "Finding others who understand.",
+		[_e(E.ADD_HUMILIATION, -3.0), _e(E.RAISE_AWARENESS, 2.0)] as Array[Dictionary])
+	var t3 := _make_node("Legal Counsel", 3, 35, "Lawyers accelerate institutional intervention.",
+		[_e(E.BOOST_INTERVENTION, 6.0)] as Array[Dictionary])
+	var t4 := _make_node("Media Exposure", 4, 55, "Going public forces emergency response.",
+		[_e(E.BOOST_INTERVENTION, 10.0, false), _e(E.RAISE_AWARENESS, 5.0)] as Array[Dictionary])
+
+	t2.prerequisites = [t1]
+	t3.prerequisites = [t2]
+	t4.prerequisites = [t3]
+	tree.nodes = [t1, t2, t3, t4]
+	return tree
+
+
+# =====================================================================
+# STARTER CARD DECKS
+# =====================================================================
+
+func _create_pregnancy_starter_cards() -> Array[CardData]:
+	var E := Enums.SkillEffectType
+	var S := Enums.CardSide.PREGNANCY
+	var cards: Array[CardData] = []
+
+	for i in 3:
+		cards.append(_make_card("Growth Pulse", S, 3.0, "A surge of cellular division.",
+			[{"type": E.INCREASE_GESTATION_SPEED, "magnitude": 1.0}] as Array[Dictionary],
+			">> Cells multiply. The burden grows heavier."))
+
+	for i in 3:
+		cards.append(_make_card("Discomfort Spike", S, 2.0, "A sharp cramp doubles her over.",
+			[{"type": E.ADD_DISCOMFORT, "magnitude": 3.0}] as Array[Dictionary],
+			">> A wave of cramping pain."))
+
+	for i in 2:
+		cards.append(_make_card("Public Embarrassment", S, 2.0, "An audible bodily betrayal.",
+			[{"type": E.ADD_HUMILIATION, "magnitude": 3.0}] as Array[Dictionary],
+			">> Her body betrays her in public."))
+
+	for i in 2:
+		cards.append(_make_card("Biomass Harvest", S, 1.0, "Siphon nutrients from the host.",
+			[{"type": E.PASSIVE_BIOMASS_GENERATION, "magnitude": 2.0}] as Array[Dictionary],
+			">> The parasite feeds."))
+
+	return cards
+
+
+func _create_host_starter_cards() -> Array[CardData]:
+	var E := Enums.SkillEffectType
+	var S := Enums.CardSide.HOST
+	var cards: Array[CardData] = []
+
+	for i in 3:
+		cards.append(_make_card("Deep Breath", S, 2.0, "Center yourself. Think clearly.",
+			[{"type": E.RAISE_AWARENESS, "magnitude": 2.0}] as Array[Dictionary],
+			">> She pauses and tries to think clearly."))
+
+	for i in 3:
+		cards.append(_make_card("Painkillers", S, 2.0, "Over-the-counter relief.",
+			[{"type": E.ADD_DISCOMFORT, "magnitude": -3.0}] as Array[Dictionary],
+			">> The medication takes the edge off."))
+
+	for i in 2:
+		cards.append(_make_card("Doctor Visit", S, 4.0, "A medical appointment.",
+			[{"type": E.BOOST_INTERVENTION, "magnitude": 5.0}] as Array[Dictionary],
+			">> She sits in the waiting room, hoping for answers."))
+
+	for i in 2:
+		cards.append(_make_card("Cover Story", S, 2.0, "A plausible excuse.",
+			[{"type": E.ADD_HUMILIATION, "magnitude": -3.0}] as Array[Dictionary],
+			">> She deflects the stares with a practiced excuse."))
+
+	return cards

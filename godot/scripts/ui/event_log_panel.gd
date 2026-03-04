@@ -17,7 +17,7 @@ func _add_entry(text: String) -> void:
 	var timestamp := ""
 	if _game_manager and _game_manager.state:
 		var state: Variant = _game_manager.state
-		timestamp = "[D%d:%02d] " % [int(state.current_day), int(state.tick_within_day)]
+		timestamp = "[R%d] " % int(state.current_round)
 
 	_lines.append(timestamp + text)
 	while _lines.size() > _max_lines:

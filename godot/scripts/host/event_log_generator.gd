@@ -10,12 +10,27 @@ func initialize(game_manager: Node) -> void:
 	GameEvents.skill_purchased.connect(_on_skill_purchased)
 	GameEvents.host_state_changed.connect(_on_host_state_changed)
 	GameEvents.gestation_changed.connect(_on_gestation_milestone)
+	GameEvents.round_started.connect(_on_round_started)
 
 
 func _get_state() -> GameState:
 	if _game_manager and _game_manager.state:
 		return _game_manager.state
 	return null
+
+
+func _on_round_started(round_number: int) -> void:
+	var state := _get_state()
+	if state == null:
+		return
+
+	# Log resource state at start of each round
+	if round_number % 5 == 0:
+		GameEvents.event_log_entry.emit(
+			"[Status] Biomass: %.1f | Awareness: %.1f | Gestation: %.1f%% | Intervention: %.1f%%" % [
+				state.biomass, state.awareness, state.gestation, state.intervention_meter
+			]
+		)
 
 
 func _on_skill_purchased(node: Resource) -> void:
